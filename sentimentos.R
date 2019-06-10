@@ -1,13 +1,10 @@
-#https://rpubs.com/giuice/analisesentimentos1
-#https://rpubs.com/giuice/sentimentos2
 
 
-## Incluindo as bibliotecas nescess·rias
-
-#Caminho Arquivos de apoio
+##Setando ambiente com os arquivos de apoio.
 setwd("C:/Users/65983/Desktop/Arquivos_R")
 getwd()
 
+## Incluindo as bibliotecas nescess√°rias
 
 library(tidyverse)
 library(data.table)
@@ -30,7 +27,7 @@ library(wordcloud)
 #1 Carregando as stopwords
 
 #Stopwords HTML
-stopwordsPage <- read_html("C:/Users/65983/Desktop/Arquivos_R/BrazilianStopwords.html", enconding="UTF-8")
+stopwordsPage <- read_html("C:/Users/Eric/Desktop/Arquivos_R/BrazilianStopwords.html", enconding="UTF-8")
 stopwordsList <- html_nodes(stopwordsPage,'td') 
 
 #Limpando o html, trocando br por tags
@@ -39,7 +36,7 @@ xml_find_all(stopwordsList, ".//br") %>% xml_remove()
 
 swstr <- html_text(stopwordsList)
 
-#Transformar em um dicion·rio
+#Transformar em um dicion√°rio
 sw <- unlist(str_split(swstr,'\\n')) 
 glimpse(sw)
 
@@ -64,7 +61,7 @@ tibble(word = sw_merged) %>%
 
 
 
-#2 Carregando os termos de polaridade de an·lise de Sentimentos em uma tabela geral
+#2 Carregando os termos de polaridade de an√°lise de Sentimentos em uma tabela geral
 
 an <- read.csv("ADJ_negativos.txt", header = F, sep = "\t", strip.white = F,
                stringsAsFactors = F, encoding="UTF-8")
@@ -96,7 +93,7 @@ str(an);str(exn)
 
 
 
-#3 Carregando o lexico de sentimentos disponÌvel no Kaggle
+#3 Carregando o lexico de sentimentos dispon√≠vel no Kaggle
 #from kaggle sentiment words https://www.kaggle.com/rtatman/sentiment-lexicons-for-81-languages/data
 
 poskaggle <- read.csv("positive_words_pt.txt", header = F, sep = "\t", strip.white = F, 
@@ -105,14 +102,14 @@ poskaggle <- read.csv("positive_words_pt.txt", header = F, sep = "\t", strip.whi
 negkaggle <- read.csv("negative_words_pt.txt", header = F, sep = "\t", strip.white = F, 
                       stringsAsFactors = F, encoding="UTF-8")
 
-#verificando se est· tudo certo
+#verificando se est√° tudo certo
 head(negkaggle)
 head(poskaggle)
 
 
 ##decidi salvar esses termos em uma tabela e classificalos como tipo e polaridade que sabe 
 ##depois eu grave um score para o peso da polaridade
-##Criando um dataframe que salvarei os termos comeÁando pelos adjetivos negativos
+##Criando um dataframe que salvarei os termos come√ßando pelos adjetivos negativos
 dfPolaridades <- an %>% 
   mutate(word = V1, polaridade = -1, tipo='adjetivo', sentimento='negativo') %>%
   select(word,polaridade,tipo,sentimento) %>%
@@ -120,7 +117,7 @@ dfPolaridades <- an %>%
 head(dfPolaridades)
 
 
-##aqui faÁo um count para poder adicionar os dados corretamente
+##aqui fa√ßo um count para poder adicionar os dados corretamente
 icount <-  length(exn$V1)
 dfPolaridades <- bind_rows(dfPolaridades,list(word = exn$V1, polaridade=rep(-1,icount),tipo=rep('expressao',icount),sentimento=rep('negativo',icount)))
 dfPolaridades %>% arrange(desc(word)) %>% head(3)
@@ -162,7 +159,7 @@ dfPolaridades <- bind_rows(dfPolaridades,list(word = poskaggle$V1, polaridade=re
 
 
 
-#visualizando como est· nosso dataframe
+#visualizando como est√° nosso dataframe
 dfPolaridades %>% group_by(word) %>% filter(n() == 1) %>% summarize(n=n())
 dfPolaridades %>% count()
 
@@ -174,22 +171,14 @@ dfPolaridadesUnique %>% count()
 
 
 
-#BASE QUE SER¡ ANALISADA
+#BASE QUE SER√Å ANALISADA
 
-con <- DBI::dbConnect(odbc::odbc(), Driver = "SQL Server", Server = "LSTCTX103SPODB", 
-                      Database = "OdsPluSoft", Port = 1433)
+con <- DBI::dbConnect(odbc::odbc(), Driver = "SQL Server", Server = "XXXXXXXXXXXXXX", 
+                      Database = "XXXXXXXX", Port = 1433)
 
 
 x <- dbSendQuery(con, "SELECT TOP (10000) Message
-                        FROM [OdsPluSoft].[dbo].[ChatMessage] A
-                        INNER JOIN [OdsPluSoft].[dbo].[Chat] B 
-                        on A.ChatPermId = B.Id
-                        And B.UserEndId <> 46
-                        Where A.InitialDateCtrl >= '2019-05-15' 
-                        AND A.InitialDateCtrl < '2019-05-16' 
-                        AND LEft(Message,1) <> '<'
-                        AND Right(Message,1) <> ']'
-                 ")
+                        FROM XXXXXXXX ")
 
 
 result <- dbFetch(x, n = -1)
@@ -219,7 +208,7 @@ tibble(resultUtf) %>% unique() %>% count()
 resultUtfUnique <- resultUtf %>% unique() 
 length(resultUtfUnique)
 
-#0.6.2 RemoÁ„o das stopwords
+#0.6.2 Remo√ß√£o das stopwords
 resultUtfUniqueSw <- tm::removeWords(resultUtfUnique,c(sw_merged,'rt'))
 tibble(resultUtfUniqueSw)
 
