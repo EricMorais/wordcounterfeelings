@@ -188,7 +188,7 @@ tibble(result)
 
 #0.6 Processo de limpeza
 removeURL <- function(x) gsub("http[^[:space:]]*", "", x)
-#resultUtf <-  readr::parse_character(result, locale = readr::locale('pt')) # sapply(tweetxt, function(x) iconv(x, "UTF-8"))
+#resultUtf <-  readr::parse_character(result, locale = readr::locale('pt')) # sapply(result, function(x) iconv(x, "UTF-8"))
 
 resultUtf <- sapply(result, function(x) stri_trans_tolower(x,'pt'))
 resultUtf <- gsub("(RT|via)((?:\\b\\W*@\\w+)+)", " ",  resultUtf);
