@@ -1,5 +1,5 @@
 #Caminho Arquivos de apoio
-setwd("C:/Users/65983/Desktop/Arquivos_R")
+setwd("C:/Users/Eric/Desktop/Arquivos_R")
 getwd()
 
 #Carregando as polaridades salvas na primeira parte do artigo
@@ -31,7 +31,7 @@ resultencoded <- sapply(resultUtfUnique,enc2native)
 df <- data.frame(text=resultencoded)
 head(df)
 
-#Criando um id para o documento, isso vai ser util na conversão
+#Criando um id para o documento, isso vai ser util na conversÃ£o
 df$doc_id <- row.names(df)
 head(df)
 
@@ -68,7 +68,7 @@ layout1 <- layout_on_sphere(g)
 plot(g, layout=layout.fruchterman.reingold)
 
 
-#melhorando a apresentação de acordo com o peso dos termos
+#melhorando a apresentaÃ§Ã£o de acordo com o peso dos termos
 V(g)$label.cex <- 2.2 * V(g)$degree / max(V(g)$degree)+ .2
 V(g)$label.color <- rgb(0, 0, .2, .8)
 V(g)$frame.color <- NA
@@ -79,8 +79,8 @@ plot(g, layout=layout1)
 
 
 #Usando a package Quanteda
-#Apresentarei a vocês agora uma outra maneira de criar matrizes de termo e documentos
-#Note que no quanteda não precisa fazer um encode de todo o texto
+#Apresentarei a vocÃªs agora uma outra maneira de criar matrizes de termo e documentos
+#Note que no quanteda nÃ£o precisa fazer um encode de todo o texto
 
 #vou qualificar os dados para futuramente fazer alguma coisa com isso
 twdf <- tibble(resultq = resultUtfUnique)
@@ -123,12 +123,12 @@ head(textstat_readability(myCorpus,"all"),2)
 #observando
 summary(myCorpus,6)
 
-#para acessar qq parte da matriz use a função texts
+#para acessar qq parte da matriz use a funÃ§Ã£o texts
 texts(myCorpus)[28:30]
 
 summary(corpus_subset(myCorpus, whois == 'conta'),6)
 
-#A função kwic (keywords in context) procura o texto e nos mostra uma forma visual da matrix
+#A funÃ§Ã£o kwic (keywords in context) procura o texto e nos mostra uma forma visual da matrix
 kwic(myCorpus,'fixo')
 
 #com o quanteda tambem podemos tokenizar o texto, vamos pegar por exemplo nossos tweets originais
@@ -140,19 +140,19 @@ temptok[1:5]
 ##O Document-feature matrix
 
 remove(temptok)
-#Agora vamos usar a principal funçao do quanteda a dfm, que transforma o corpus em um 
-#documento termo matriz e ao contrario da funçao tokens ela aplica varios funções de limpeza como
-#retirar pontuação, converter para minusculo, para saber mais consulte a documentação
+#Agora vamos usar a principal funÃ§ao do quanteda a dfm, que transforma o corpus em um 
+#documento termo matriz e ao contrario da funÃ§ao tokens ela aplica varios funÃ§Ãµes de limpeza como
+#retirar pontuaÃ§Ã£o, converter para minusculo, para saber mais consulte a documentaÃ§Ã£o
 myDfm <- dfm(myCorpus, stem = F)
 myDfm
 
-##Pode-se tamber criar o documento como na Package TM já fazendo o stem e stopwords'
+##Pode-se tamber criar o documento como na Package TM jÃ¡ fazendo o stem e stopwords'
 
-stopwors2 <- c('the','r','é','c','?','!','of','rt','pra')
+stopwors2 <- c('the','r','Ã©','c','?','!','of','rt','pra')
 myDfm <- dfm(myCorpus, groups='whois', remove = c(quanteda::stopwords("portuguese"),stopwors2
                                                   ,tm::stopwords('portuguese')), 
              stem = F, remove_punct = TRUE)
-#note que com a opão groups ele agrupou pela nossa classificação
+#note que com a opÃ£o groups ele agrupou pela nossa classificaÃ§Ã£o
 myDfm
 
 ## para acessar os termos mais usados
@@ -160,7 +160,7 @@ topfeatures(myDfm, 20)
 
 
 
-#e finalmente chegamos na nossa já conhecida wordcloud
+#e finalmente chegamos na nossa jÃ¡ conhecida wordcloud
 set.seed(100)
 textplot_wordcloud(myDfm, min.freq = 15, random.order = FALSE,
                    rot.per = .6, 
@@ -175,7 +175,7 @@ allfeats <- textstat_frequency(myDfm)
 allfeats$feature <- with(allfeats, reorder(feature, -frequency))
 
 ggplot(head(allfeats,20), aes(x=feature, y=frequency, fill=frequency)) + geom_bar(stat="identity") +
-  xlab("Termos") + ylab("Frequência") + coord_flip() +
+  xlab("Termos") + ylab("FrequÃªncia") + coord_flip() +
   theme(axis.text=element_text(size=7))
 
 
@@ -186,7 +186,7 @@ head(col)
 #col <- with(col, reorder(collocation, count))
 ggplot(col[order(col$count, decreasing = T),][1:25,], 
        aes(x=reorder(collocation,count), y=factor(count), fill=factor(count))) + geom_bar(stat="identity") +
-  xlab("Expressões") + ylab("Frequência")  + coord_flip() +
+  xlab("ExpressÃµes") + ylab("FrequÃªncia")  + coord_flip() +
   theme(axis.text=element_text(size=7))
 
 
@@ -200,7 +200,7 @@ textplot_keyness(tstatkeyness)
 #dfm_sort(myDfm)[, 1:20]
 textstat_simil(myDfm, c('conta','total','fixo','valor','internet'))
 
-#Plotando score wordfish(escala não supervisionada)
+#Plotando score wordfish(escala nÃ£o supervisionada)
 ## wordfish
 wfm <- textmodel_wordfish(myDfm)
 textplot_scale1d(wfm)
@@ -236,7 +236,7 @@ mytoken <- tokens_remove(mytoken, stopwords('portuguese'))
 head(textstat_collocations(mytoken,size = 5, min_count = 5))
 
 
-#Criando um grafico das relações entre as tags
+#Criando um grafico das relaÃ§Ãµes entre as tags
 myrawCorpus <- corpus(twraw)
 tweetdfm <- dfm(myrawCorpus, remove_punct = TRUE)
 tagdfm <- dfm_select(tweetdfm, ('#*'))
@@ -250,7 +250,7 @@ toptagfcm <- fcm_select(tagfcm, toptag)
 textplot_network(toptagfcm, min_freq = 0.1, edge_alpha = 0.8, edge_size = 5)
 
 
-#Criando um grafico das relações de usuários
+#Criando um grafico das relaÃ§Ãµes de usuÃ¡rios
 userdfm <- dfm_select(tweetdfm, ('@*'))
 topuser <- names(topfeatures(userdfm, 200))
 userfcm <- fcm(userdfm)
@@ -279,7 +279,7 @@ scorebygroup %>%
   geom_smooth() +
   facet_wrap(~ term) +
   scale_y_continuous(labels = percent_format()) +
-  ylab("Frequência por polaridade") +
+  ylab("FrequÃªncia por polaridade") +
   aes(color = term) + scale_color_manual(values = c("red", "green"))
 
      
@@ -289,7 +289,7 @@ scorebygroup %>%
   geom_smooth() +
   facet_wrap(~ document) +
   scale_y_continuous(labels = percent_format()) +
-  ylab("Frequência por polaridade") +
+  ylab("FrequÃªncia por polaridade") +
   aes(fill= term,color = term) + scale_color_manual(values = c("red", "green"))
 
 #Procurando por frequencia
@@ -335,7 +335,7 @@ micg <- ggplot(miccover, aes(Percentile * 100, TextNum)) + geom_point() +
 grid.arrange(faceg, googleg, micg, ncol = 3)
 
 
-#Frequência relativa por empresa
+#FrequÃªncia relativa por empresa
 
 gf <- myCorpus %>%
   dfm(remove = stopwords("portuguese"), remove_punct = TRUE)# %>%
@@ -391,13 +391,13 @@ mylda <- LDA(convert(quantdfm, to = "topicmodels"), k = 20)
 
 head(get_terms(mylda,6))
 
-#Análise de Sentimentos com Tidy
-#salvando o dataframe para não ter discrepancias nos comentários
+#AnÃ¡lise de Sentimentos com Tidy
+#salvando o dataframe para nÃ£o ter discrepancias nos comentÃ¡rios
 #twdf %>% write_csv(path='parte2/twittersentimentaldata.csv')
 twdf <- read_csv('d://Cursos/PreparacaoCarreiraCientista/R-Bigdata/Projeto1/parte2/twittersentimentaldata.csv')
 twdf$id <- rownames(twdf)
 tw <- twdf %>% mutate(document = id,word=tweet) %>% select(document,word,whois)
-#note que a coluna document carrega a identificação de cada texto
+#note que a coluna document carrega a identificaÃ§Ã£o de cada texto
 str(tw)
 
 
@@ -438,7 +438,7 @@ scored <- sentJoin %>%
 ggplot(scored, aes(whois,scoreperc , fill = whois)) +
   geom_bar(stat = "identity", show.legend = T) 
 
-#Quais são nossos tops sentimentos?
+#Quais sÃ£o nossos tops sentimentos?
 
 word_counts <- sentJoin %>%
   count(word, sentimento, sort = TRUE) %>%
@@ -494,7 +494,7 @@ twdf %>% filter(id %in% as.vector(top8$document))
 require(sentR)
 
 sentimentToScore <-  sample_n(data.frame(text=twdf$tweet),100)
-# 2. Aplicando o metodo de classificação Naive Bayes
+# 2. Aplicando o metodo de classificaÃ§Ã£o Naive Bayes
 out <- classify.naivebayes(sentimentToScore$text)
 scoredDf <- cbind(sentimentToScore,out, stringsAsFactors=F)
 scoredDf$`POS/NEG` <- as.numeric(scoredDf$`POS/NEG`) 
@@ -548,7 +548,7 @@ classificados <- read_csv('d://Cursos/PreparacaoCarreiraCientista/R-Bigdata/Proj
 classificados <- classificados[1:70,]
 classificados$class.text[classificados$class.text== -1] <- 0
 classificados$whois <- NULL
-#renomeando colunas para converter em corpus, assim evitando a perda de acentuação
+#renomeando colunas para converter em corpus, assim evitando a perda de acentuaÃ§Ã£o
 classificados$doc_id <- row.names(classificados)
 classificados <- rename(classificados, text = tweet)
 
