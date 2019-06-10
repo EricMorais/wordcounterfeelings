@@ -1,7 +1,7 @@
 
 
 ##Setando ambiente com os arquivos de apoio.
-setwd("C:/Users/65983/Desktop/Arquivos_R")
+setwd("C:/Users/Eric/Desktop/Arquivos_R")
 getwd()
 
 ## Incluindo as bibliotecas nescessárias
@@ -22,7 +22,6 @@ library(odbc)
 library(tidyselect)
 library(tinytex)
 library(wordcloud)
-
 
 #1 Carregando as stopwords
 
@@ -173,12 +172,13 @@ dfPolaridadesUnique %>% count()
 
 #BASE QUE SERÁ ANALISADA
 
-con <- DBI::dbConnect(odbc::odbc(), Driver = "SQL Server", Server = "XXXXXXXXXXXXXX", 
+con <- DBI::dbConnect(odbc::odbc(), Driver = "SQL Server", Server = "XXXXXXXX", 
                       Database = "XXXXXXXX", Port = 1433)
 
 
 x <- dbSendQuery(con, "SELECT TOP (10000) Message
-                        FROM XXXXXXXX ")
+                        FROM XXXXXXX
+                 ")
 
 
 result <- dbFetch(x, n = -1)
@@ -225,11 +225,15 @@ ttokens_filter %>% count(word, sort=T)
 ttokens_freq <- ttokens_filter %>% count(word, sort = T) %>% select(word, freq=n) 
 ttokens_freq
 
-wordcloud2(ttokens_freq , minSize = 2, size = 1, backgroundColor = 'black')
+#wordcloud2(ttokens_freq , minSize = 2, size = 1, backgroundColor = 'black')
 
 pal2 <- brewer.pal(8,"Dark2")
-wordcloud(words =  ttokens_freq$word, freq = ttokens_freq$freq , min.freq = 8,  random.color = T, max.word = 200, random.order = T, colors = pal2)
 
-wordcloud2(ttokens_freq %>% filter(freq<100) , minSize = 6, size = 1, backgroundColor = 'black')
+wordcloud(words =  ttokens_freq$word, freq = ttokens_freq$freq , min.freq = 50,  random.color = T, max.word = 100
+          ,random.order = F, colors = pal2 ,scale=c(2,.5) 
+          ,use.r.layout=FALSE,fixed.asp=TRUE)
+
+
+#wordcloud2(ttokens_freq %>% filter(freq<100) , minSize = 6, size = 1, backgroundColor = 'black')
 
 
